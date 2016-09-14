@@ -1,6 +1,7 @@
 // VARIABLES
 var stage;
 var container;
+var pin;
 
 // FUNCTIONS
 function main()
@@ -18,14 +19,39 @@ function main()
     center();
     stage.update();
 
-	var testing = new createjs.Shape();
-		//testing.graphics.beginFill("DeepSkyBlue").drawCircle(0, 0, 50);
-		testing.graphics.beginFill("DeepSkyBlue").rect(0,0,50,50);
-		testing.x = window.innerWidth * 0.5;
-		testing.y = window.innerHeight * 0.5;
-	stage.addChild(testing);    
+	pin = new createjs.Shape();
+	//pin.graphics.beginFill("DeepSkyBlue").drawCircle(0, 0, 50);
+	pin.graphics.beginFill("DeepSkyBlue").rect(-25,-25,50,50);
+	pin.x = window.innerWidth * 0.5;
+	pin.y = window.innerHeight * 0.5;
+	pin.name = "Testing Object";
+	pin.targetRotation = 0;
+	pin.addEventListener( "click" , testingPressed );
+	pin.addEventListener( "tick", updatePin );
+
+	stage.addChild(pin);    
 }
-	
+
+function updatePin( event )
+{
+	if(pin.targetRotation < 0 )
+	{
+		pin.targetRotation = 0;
+	}else{	
+		var accel = 0.97;
+		var destination = pin.targetRotation - ( pin.targetRotation * accel );
+		pin.rotation += destination;
+		pin.targetRotation -= destination;
+	}
+	//console.log( pin.targetRotation );
+}
+
+function testingPressed( event )	
+{
+	console.log("rectangle pressed:" + event.target);
+	event.target.targetRotation += 500 + Math.random() * 500;
+}
+
 function keyPressed( event )
 {
 	//Keycodes found at http://keycode.info
