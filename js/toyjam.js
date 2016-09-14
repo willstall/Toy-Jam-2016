@@ -2,6 +2,7 @@
 var stage;
 var container;
 var pin;
+var itemSelector;
 var items = 12;
 var itemCount = 12;
 var radius = 200;
@@ -37,6 +38,8 @@ function main()
     document.onkeydown = keyPressed;
 
 	// Items
+	items = new Array();
+
 	for(var i = 0; i < itemCount; i++)
 	{
 	    var x = radius * Math.cos(2 * Math.PI * i / itemCount);
@@ -49,19 +52,28 @@ function main()
 	    	circle.name = "Circle " + i;
 
 	    container.addChild(circle);
-	    items[i] = circle;
+	    items.push( circle );
 	}
 
+	// Item Selector
+	itemSelector = new createjs.Shape();
+	itemSelector.graphics.beginFill("Grey").drawCircle(0,0,30);
+	itemSelector.x = radius;
+	itemSelector.name = "Item Selector";
+	itemSelector.mouseEnabled = false;
+
 	// Pin
-	pin = new createjs.Shape();
-	pin.graphics.beginFill("DeepSkyBlue").rect(-25,-25,50,50);
-	pin.graphics.beginFill("Grey").drawCircle(radius,0,30);
-	pin.name = "Testing Object";
+	var pinWheel = new createjs.Shape();
+		pinWheel.graphics.beginFill("DeepSkyBlue").rect(-25,-25,50,50);
+
+	pin = new createjs.Container();
 	pin.targetRotation = 100 + Math.random() * 3000;
-	pin.addEventListener( "click" , testingPressed );
+	pin.addChild( pinWheel );
+	pin.addChild( itemSelector );
+	pin.addEventListener( "click" , spinPin );
 	pin.addEventListener( "tick", updatePin );
 
-	container.addChild(pin);    
+	container.addChild(pin); 
 }
 
 function updatePin( event )
@@ -77,10 +89,19 @@ function updatePin( event )
 		pin.targetRotation -= destination;
 	}
 	// Detection
+	var currentItem = items[i];
+	var distance = Infinity;
+
 	for( var i =0; i < itemCount; i++ )
 	{
-
+		//console.log( items[i] );
+		
 	}	
+}
+
+function spinPin( event )
+{
+	pin.targetRotation += 250 + Math.random() * 750;
 }
 
 function distance( x1, y1, x2, y2 )
@@ -91,18 +112,13 @@ function distance( x1, y1, x2, y2 )
 	return c;
 }
 
-function testingPressed( event )	
-{
-	console.log("rectangle pressed:" + event.target);
-	event.target.targetRotation += 250 + Math.random() * 750;
-}
-
 function keyPressed( event )
 {
 	//Keycodes found at http://keycode.info
 	if( event.keyCode == 32 )
 	{
-		console.log("testing");
+		//console.log("testing");
+		spinPin();
 	}
 }
 
