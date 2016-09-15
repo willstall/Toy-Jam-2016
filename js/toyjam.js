@@ -201,6 +201,10 @@ function updatePin( event )
 		pin.rotation = lerp( pin.rotation, pin.targetRotation, ease);
 
 	}
+
+	if(audioPlaying == true)
+		pin.targetRotation += 20;
+
 	// Detection
 	var distance = Infinity;
 	var selectorPoint = itemSelector.localToGlobal(itemSelector.x,itemSelector.y);

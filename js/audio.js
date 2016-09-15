@@ -1,10 +1,11 @@
 // VARIABLES
 var audioPath = "./audio/";
 var audioReady = false;
+var audioPlaying = false;
 var sounds = [
-	["test.mp3","test2.mp3","test3.mp3"],
 	["test.mp3"],
-	["test.mp3"],
+	["test2.mp3"],
+	["test3.mp3"],
 	["test.mp3"],
 	["test.mp3"],
 	["test.mp3"],
@@ -58,7 +59,7 @@ function audioLoaded( event )
 {
 	audioReady = true;
 
-	console.log("Sounds Loaded");
+	//console.log("Sounds Loaded");
 	//createjs.Sound.play(event.src);
 }
 
@@ -76,6 +77,11 @@ function getRandomSound( id )
 	return sound;
 }
 
+function selectedAudioComplete( event )
+{
+	audioPlaying = false;
+}
+
 function playSelectedAudio( event )
 {
 	if(!audioReady)
@@ -83,20 +89,30 @@ function playSelectedAudio( event )
 
 	var sound = getRandomSound( selectedItem.id );	// needs to be replaced with real id
 
-	console.log("Play Audio: " + sound );
+	audioPlaying = true;	
+	//console.log("Play Audio: " + sound );
 	if(animalSoundInstance)
 		animalSoundInstance.destroy();
 
 	animalSoundInstance = createjs.Sound.play( sound );
+	animalSoundInstance.on("complete", selectedAudioComplete );
 }
+
+//var audioSelectionInstance;
 
 function playSelectionAudio()
 {
 	if(!audioReady)
 		return;
 
-	//var instance = createjs.Sound.play("Selection");
-	//	instance.volume = 0.5;
+	// if( audioSelectionInstance )
+	// {
+	// 	audioSelectionInstance.destroy();
+	// }
+
+	//audioSelectionInstance = createjs.Sound.play("Selection");
+	//audioSelectionInstance.volume = 0.5;
+	//audioSelectionInstance.on("complete", this.handleComplete, this);
 }
 
 function playSpinnerAudio()
