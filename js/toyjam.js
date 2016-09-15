@@ -25,6 +25,7 @@ var animals =
 	];
 var origCordPoint;
 var cordImg;
+var credits;
 
 // FUNCTIONS
 function main()
@@ -145,6 +146,14 @@ function main()
 
 	container.addChild(pin);
 
+
+	credits = new createjs.Bitmap("./img/credits.png");
+	credits.mouseEnabled = false;
+	credits.x = -154;
+
+	container.addChild(credits);
+
+	updateStage();
 	// Debug
 	// debug = new createjs.Shape();
 	// debug.graphics.beginFill("Green").drawCircle(1,1,5);
@@ -173,7 +182,7 @@ function pressAnimal( event )
 }
 
 function pullCordOut( event )
-{
+{	
 	cordImg.x = -97;
 	cordImg.y = -193;
 
@@ -302,6 +311,7 @@ function updateStage( event )
 	container.x = window.innerWidth * 0.5;
 	container.y = window.innerHeight * 0.5;
 
+	credits.y = stage.canvas.height * 0.5 - 40;
     stage.update();    
 }
 
