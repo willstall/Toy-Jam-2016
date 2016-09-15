@@ -3,18 +3,18 @@ var audioPath = "./audio/";
 var audioReady = false;
 var audioPlaying = false;
 var sounds = [
-	["test.mp3"],
-	["test2.mp3"],
-	["test3.mp3"],
-	["test.mp3"],
-	["test.mp3"],
-	["test.mp3"],
-	["test.mp3"],
-	["test.mp3"],
-	["test.mp3"],
-	["test.mp3"],
-	["test.mp3"],
-	["test.mp3"]
+	["Turtle.mp3"],
+	["Sheep.mp3"],
+	["Turkey.mp3"],
+	["Horse.mp3"],
+	["Pig.mp3"],
+	["Wolf.mp3"],
+	["Frog.mp3"],
+	["Cat.mp3"],
+	["Duck.mp3"],
+	["Cow.mp3"],
+	["Chicken.mp3"],
+	["Dog.mp3"]
 ];
 var soundEffects =
 [
@@ -43,7 +43,7 @@ function preloadAudio()
 		{
 			var sound = {
 				id : "sound_"+i+"_"+a,
-				src : audioPath + sounds[i][a]
+				src : audioPath + "animals/" + sounds[i][a]
 			};
 			manifest.push( sound );
 		}
