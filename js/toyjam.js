@@ -245,7 +245,8 @@ function updateSelectedItem()
 	if( animalIndex != selectedItem.id )
 	{
 		selectedItem = items[animalIndex];
-		playSelectionAudio();		
+		if(!audioPlaying)
+			playSelectionAudio();		
 	}
 
 	//console.log( animalIndex );

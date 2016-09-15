@@ -98,19 +98,31 @@ function playSelectedAudio( event )
 	animalSoundInstance.on("complete", selectedAudioComplete );
 }
 
-//var audioSelectionInstance;
+//var audioSelectionInstance1;
+//var audioSelectionInstance2;
 
-function playSelectionAudio()
+var audioSelectionsInstance;
+
+function playSelectionAudio( index )
 {
+	if(!audioSelectionsInstance)
+			audioSelectionsInstance = new Array();
+		
+	var audioSelectionInstance = audioSelectionsInstance[ index ];
+
 	if(!audioReady)
 		return;
 
-	// if( audioSelectionInstance )
-	// {
-	// 	audioSelectionInstance.destroy();
-	// }
+	if( audioSelectionInstance )
+	{
+		audioSelectionInstance.position = 0;
+	 	audioSelectionInstance.play();
+	 	return;
+	}
 
-	//audioSelectionInstance = createjs.Sound.play("Selection");
+	audioSelectionInstance = createjs.Sound.play("Selection");
+
+	audioSelectionsInstance[ index ] = audioSelectionInstance
 	//audioSelectionInstance.volume = 0.5;
 	//audioSelectionInstance.on("complete", this.handleComplete, this);
 }
