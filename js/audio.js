@@ -23,6 +23,8 @@ var soundEffects =
     {id:"Selection", src:"selector.mp3"}
 ];
 var animalSoundInstance;
+var audioSelectedInstances;
+var audioSelectionInstances;
 
 // FUNCTIONS
 function preloadAudio()
@@ -87,31 +89,39 @@ function playSelectedAudio( event )
 	if(!audioReady)
 		return;
 
-	var sound = getRandomSound( selectedItem.id );	// needs to be replaced with real id
+	if(!audioSelectedInstances)
+			audioSelectedInstances = new Array();
+
+	var index = selectedItem.id;
+	var sound = getRandomSound( index );	// needs to be replaced with real id
 
 	audioPlaying = true;	
 	//console.log("Play Audio: " + sound );
+
+	var animalSoundInstance = audioSelectedInstances[ index ];
+
 	if(animalSoundInstance)
-		animalSoundInstance.destroy();
+	{
+		animalSoundInstance.position = 0;
+	 	animalSoundInstance.play();
+	 	return;
+	}
 
 	animalSoundInstance = createjs.Sound.play( sound );
 	animalSoundInstance.on("complete", selectedAudioComplete );
+
+	audioSelectedInstances[ index ] = animalSoundInstance;
 }
-
-//var audioSelectionInstance1;
-//var audioSelectionInstance2;
-
-var audioSelectionsInstance;
 
 function playSelectionAudio( index )
 {
-	if(!audioSelectionsInstance)
-			audioSelectionsInstance = new Array();
-		
-	var audioSelectionInstance = audioSelectionsInstance[ index ];
-
 	if(!audioReady)
 		return;
+
+	if(!audioSelectionInstances)
+			audioSelectionInstances = new Array();
+
+	var audioSelectionInstance = audioSelectionInstances[ index ];
 
 	if( audioSelectionInstance )
 	{
@@ -122,7 +132,7 @@ function playSelectionAudio( index )
 
 	audioSelectionInstance = createjs.Sound.play("Selection");
 
-	audioSelectionsInstance[ index ] = audioSelectionInstance
+	audioSelectionInstances[ index ] = audioSelectionInstance
 	//audioSelectionInstance.volume = 0.5;
 	//audioSelectionInstance.on("complete", this.handleComplete, this);
 }
