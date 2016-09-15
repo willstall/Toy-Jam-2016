@@ -146,11 +146,13 @@ function main()
 
 	container.addChild(pin);
 
+	var creditsHitbox = new createjs.Shape();
+		creditsHitbox.graphics.beginFill("Grey").rect(0,0,308,20);
 
 	credits = new createjs.Bitmap("./img/credits.png");
-	credits.mouseEnabled = false;
 	credits.x = -154;
-
+	credits.hitArea = creditsHitbox;
+	credits.addEventListener("click" , pressCredits);
 	container.addChild(credits);
 
 	updateStage();
@@ -159,6 +161,11 @@ function main()
 	// debug.graphics.beginFill("Green").drawCircle(1,1,5);
 	// debug.name = "Debug";
 	// container.addChild(debug);
+}
+
+function pressCredits()
+{
+	alert("You know you love it, bb <3");
 }
 
 function pressAnimal( event )
