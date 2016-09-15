@@ -170,6 +170,7 @@ function pressCredits()
 
 function pressAnimal( event )
 {
+	audioPlaying = false;
 	// console.log("press animal");
 	var targetRotation = Math.atan2(event.target.y,event.target.x) * 180 / Math.PI;
 		targetRotation = Math.round( targetRotation );
@@ -288,6 +289,7 @@ function updateCord()
 
 function spinPin( event )
 {
+	audioPlaying = false;
 	playSpinnerAudio();
 	pin.targetRotation += 250 + Math.random() * 750;
 }
