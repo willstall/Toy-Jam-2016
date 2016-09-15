@@ -150,7 +150,7 @@ function pullCordOut( event )
 	cordImg.x = -97;
 	cordImg.y = -193;
 	playCordAudio();
-	playSelectedAnimal();
+	playSelectedAudio( event );
 }
 
 function updatePin( event )
@@ -175,7 +175,7 @@ function updatePin( event )
 		var currentItem = items[i];
 		var currentItemPoint = currentItem.localToGlobal( currentItem.x, currentItem.y );
 		var currentDistance = getDistance( currentItemPoint.x, currentItemPoint.y, selectorPoint.x, selectorPoint.y );
-		if( currentDistance < distance )
+		if( currentDistance < Math.ceil(distance) )
 		{
 			newSelectedItem = currentItem;
 			distance = currentDistance;
@@ -229,11 +229,6 @@ function updateCord()
 	cordImg.y -= ( cordImg.y - origCordPoint ) * accel;
 }
 
-function playSelectedAnimal( event )
-{
-	playSelectedAudio( event );
-}
-
 function spinPin( event )
 {
 	playSpinnerAudio();
@@ -245,7 +240,7 @@ function getDistance( x1, y1, x2, y2 )
 	var a = x1 - x2;
 	var b = y1 - y2;
 	var c = Math.sqrt( a*a + b*b );
-	return Math.floor(c);
+	return c;
 }
 
 function keyPressed( event )
