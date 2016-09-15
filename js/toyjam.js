@@ -2,10 +2,29 @@
 var stage;
 var container;
 var pin;
+var items;
 var itemSelector;
-var items = 12;
-var itemCount = 12;
-var radius = 200;
+var selectedItem;
+var items;
+var radius = 234;
+var debug;
+var animals =
+	[
+		"cat.png",
+		"cow.png",
+		"coyote.png",
+		"dog.png",
+		"duck.png",
+		"frog.png",
+		"horse.png",
+		"pig.png",
+		"rooster.png",
+		"sheep.png",
+		"turkey.png",
+		"turtle.png",
+	];
+var origCordPoint;
+var cordImg;
 
 // FUNCTIONS
 function main()
@@ -37,34 +56,78 @@ function main()
     // Debug
     document.onkeydown = keyPressed;
 
+	// Cord and Play
+	var playBtn = new createjs.Shape();
+		playBtn.graphics.beginFill("Orange").rect(-50,-50,100,100);
+		playBtn.x = 297;
+		playBtn.y = 297;
+		playBtn.alpha = 50;
+
+	cordImg = new createjs.Bitmap("./img/cord.png");
+	cordImg.x = -297;
+	cordImg.y = -297;
+	//cordImg.addEventListener( "click", playSelectedAnimal);
+	cordImg.addEventListener("mousedown", pullCordOut );
+	cordImg.hitArea = playBtn;
+		origCordPoint = -297;
+
+	var cord = new createjs.Container();
+		cord.x = 300;
+		cord.y = 200;
+		cord.addChild(cordImg);	
+
+	container.addChild( cord );
+
+	// Background
+	var background = new createjs.Bitmap("./img/background.png");
+		background.mouseEnabled = false;
+		background.x = -423;
+		background.y = -423;
+	container.addChild(background);
+
+    // Setup Audio
+    preloadAudio();
+
 	// Items
-	items = new Array();
+	var itemCount = sounds.length;
+	items = new Array();	
 
 	for(var i = 0; i < itemCount; i++)
 	{
 	    var x = radius * Math.cos(2 * Math.PI * i / itemCount);
 	    var y = radius * Math.sin(2 * Math.PI * i / itemCount);   
 
-	    var circle = new createjs.Shape();
-	    	circle.graphics.beginFill("Red").drawCircle(0,0,10);
+	    //var circle = new createjs.Shape();
+	    //	circle.graphics.beginFill("Red").drawCircle(0,0,10);
+	    var circle = new createjs.Bitmap("./img/animals/" + animals[i]);
 	    	circle.x = x;
 	    	circle.y = y;
+	    	circle.regX = 64;
+	    	circle.regY = 64;
 	    	circle.name = "Circle " + i;
+	    	circle.id = i;
 
 	    container.addChild(circle);
 	    items.push( circle );
 	}
+	selectedItem = items[0];
 
 	// Item Selector
 	itemSelector = new createjs.Shape();
-	itemSelector.graphics.beginFill("Grey").drawCircle(0,0,30);
+	// itemSelector.graphics.beginFill("Grey").drawCircle(0,0,30);
 	itemSelector.x = radius;
 	itemSelector.name = "Item Selector";
 	itemSelector.mouseEnabled = false;
 
 	// Pin
-	var pinWheel = new createjs.Shape();
-		pinWheel.graphics.beginFill("DeepSkyBlue").rect(-25,-25,50,50);
+	var pinWheelBtn = new createjs.Shape();
+		pinWheelBtn.graphics.beginFill("Grey").drawCircle(188,188,300);
+
+	var pinWheel = new createjs.Bitmap("./img/spinner.png");
+		pinWheel.x = -188;
+		pinWheel.y = -188;
+		pinWheel.hitArea = pinWheelBtn;
+		//pinWheel.mouseEnabled = false;
 
 	pin = new createjs.Container();
 	pin.targetRotation = 100 + Math.random() * 3000;
@@ -73,7 +136,21 @@ function main()
 	pin.addEventListener( "click" , spinPin );
 	pin.addEventListener( "tick", updatePin );
 
-	container.addChild(pin); 
+	container.addChild(pin);
+
+	// Debug
+	// debug = new createjs.Shape();
+	// debug.graphics.beginFill("Green").drawCircle(1,1,5);
+	// debug.name = "Debug";
+	// container.addChild(debug);
+}
+
+function pullCordOut( event )
+{
+	cordImg.x = -97;
+	cordImg.y = -193;
+	playCordAudio();
+	playSelectedAnimal();
 }
 
 function updatePin( event )
@@ -83,44 +160,103 @@ function updatePin( event )
 	{
 		pin.targetRotation = 0; 
 	}else{	
-		var accel = .98;
+		var accel = .93;
 		var destination = pin.targetRotation - ( pin.targetRotation * accel );
 		pin.rotation += destination;
 		pin.targetRotation -= destination;
 	}
 	// Detection
-	var currentItem = items[i];
 	var distance = Infinity;
+	var selectorPoint = itemSelector.localToGlobal(itemSelector.x,itemSelector.y);
+	var newSelectedItem = selectedItem;
 
-	for( var i =0; i < itemCount; i++ )
+	for( var i = 0; i < sounds.length; i++ )
 	{
-		//console.log( items[i] );
+		var currentItem = items[i];
+		var currentItemPoint = currentItem.localToGlobal( currentItem.x, currentItem.y );
+		var currentDistance = getDistance( currentItemPoint.x, currentItemPoint.y, selectorPoint.x, selectorPoint.y );
+		if( currentDistance < distance )
+		{
+			newSelectedItem = currentItem;
+			distance = currentDistance;
+		}
+	}
+
+	if(newSelectedItem != selectedItem)
+	{
+		selectedItem = newSelectedItem;
+		playSelectionAudio();	
+	}
+	// Debug Detection
+	//console.log( selectedItem.name );
+
+	updateAnimalSizes();
+	updateCord();
+
+	if(!debug)
+		return;
+
+	debug.graphics.clear();
+	debug.graphics.setStrokeStyle(1);
+	debug.graphics.beginStroke("Green");
+	debug.graphics.moveTo(0,0);
+	debug.graphics.lineTo( selectedItem.x, selectedItem.y);
+}
+
+function updateAnimalSizes()
+{
+	var scaleMax = 1.3;
+	var accel = 0.3;
+	for( var i = 0; i < sounds.length; i++ )
+	{
+		currentItem = items[i];
+		var targetScale = (currentItem != selectedItem)?( 1 ) : ( scaleMax );
 		
-	}	
+		currentItem.scaleX -= (currentItem.scaleX - targetScale) * accel;
+		currentItem.scaleY -= (currentItem.scaleY - targetScale) * accel;
+	}
+
+	// var accel = .98;
+	// var destination = pin.targetRotation - ( pin.targetRotation * accel );
+	// pin.rotation += destination;
+	// pin.targetRotation -= destination;
+}
+
+function updateCord()
+{
+	var accel = 0.1;
+	cordImg.x -= ( cordImg.x - origCordPoint ) * accel;
+	cordImg.y -= ( cordImg.y - origCordPoint ) * accel;
+}
+
+function playSelectedAnimal( event )
+{
+	playSelectedAudio( event );
 }
 
 function spinPin( event )
 {
+	playSpinnerAudio();
 	pin.targetRotation += 250 + Math.random() * 750;
 }
 
-function distance( x1, y1, x2, y2 )
+function getDistance( x1, y1, x2, y2 )
 {
 	var a = x1 - x2;
 	var b = y1 - y2;
 	var c = Math.sqrt( a*a + b*b );
-	return c;
+	return Math.floor(c);
 }
 
 function keyPressed( event )
 {
 	//Keycodes found at http://keycode.info
-	if( event.keyCode == 32 )
-	{
-		//console.log("testing");
+	if( event.keyCode == 32 )		// SPACEBAR
 		spinPin();
-	}
-}
+
+	if(event.keyCode == 13 )		// ENTER
+		pullCordOut();
+}	
 
 function updateStage( event )
 {
