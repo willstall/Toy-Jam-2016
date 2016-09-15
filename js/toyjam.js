@@ -10,18 +10,18 @@ var radius = 234;
 var debug;
 var animals =
 	[
-		"cat.png",
-		"cow.png",
-		"coyote.png",
-		"dog.png",
-		"duck.png",
-		"frog.png",
-		"horse.png",
-		"pig.png",
-		"rooster.png",
+		"turtle.png",
 		"sheep.png",
 		"turkey.png",
-		"turtle.png",
+		"horse.png",
+		"pig.png",
+		"coyote.png",
+		"frog.png",
+		"cat.png",
+		"duck.png",
+		"cow.png",
+		"rooster.png",
+		"dog.png"
 	];
 var origCordPoint;
 var cordImg;
@@ -69,7 +69,8 @@ function main()
 	//cordImg.addEventListener( "click", playSelectedAnimal);
 	cordImg.addEventListener("mousedown", pullCordOut );
 	cordImg.hitArea = playBtn;
-		origCordPoint = -297;
+
+	origCordPoint = -297;
 
 	var cord = new createjs.Container();
 		cord.x = 300;
@@ -97,8 +98,11 @@ function main()
 	    var x = radius * Math.cos(2 * Math.PI * i / itemCount);
 	    var y = radius * Math.sin(2 * Math.PI * i / itemCount);   
 
-	    //var circle = new createjs.Shape();
-	    //	circle.graphics.beginFill("Red").drawCircle(0,0,10);
+	    var circleHitArea = new createjs.Shape();
+	    	circleHitArea.graphics.beginFill("Red").drawCircle(0,0,50);
+	    	// circleHitArea.x = 32;
+	    	// circleHitArea.y = 32;
+	    	
 	    var circle = new createjs.Bitmap("./img/animals/" + animals[i]);
 	    	circle.x = x;
 	    	circle.y = y;
@@ -106,6 +110,8 @@ function main()
 	    	circle.regY = 64;
 	    	circle.name = "Circle " + i;
 	    	circle.id = i;
+	    	// circle.hitArea = circleHitArea;
+	    	circle.addEventListener("click", pressAnimal);
 
 	    container.addChild(circle);
 	    items.push( circle );
@@ -114,14 +120,14 @@ function main()
 
 	// Item Selector
 	itemSelector = new createjs.Shape();
-	// itemSelector.graphics.beginFill("Grey").drawCircle(0,0,30);
+	//itemSelector.graphics.beginFill("Grey").drawCircle(0,0,30);
 	itemSelector.x = radius;
 	itemSelector.name = "Item Selector";
 	itemSelector.mouseEnabled = false;
 
 	// Pin
 	var pinWheelBtn = new createjs.Shape();
-		pinWheelBtn.graphics.beginFill("Grey").drawCircle(188,188,300);
+		pinWheelBtn.graphics.beginFill("Grey").drawCircle(188,188,180);
 
 	var pinWheel = new createjs.Bitmap("./img/spinner.png");
 		pinWheel.x = -188;
@@ -132,6 +138,7 @@ function main()
 	pin = new createjs.Container();
 	pin.targetRotation = 100 + Math.random() * 3000;
 	pin.addChild( pinWheel );
+	//pin.addChild( pinWheelBtn );
 	pin.addChild( itemSelector );
 	pin.addEventListener( "click" , spinPin );
 	pin.addEventListener( "tick", updatePin );
@@ -145,12 +152,38 @@ function main()
 	// container.addChild(debug);
 }
 
+function pressAnimal( event )
+{
+	// console.log("press animal");
+	var targetRotation = Math.atan2(event.target.y,event.target.x) * 180 / Math.PI;
+		targetRotation = Math.round( targetRotation );
+
+	if(targetRotation <= 0 )
+	{
+		targetRotation += 360;
+	}
+
+	var currentRotations = Math.floor( pin.targetRotation / 360 );
+	var finalTargetRotation = currentRotations * 360 + targetRotation;
+
+	if(finalTargetRotation <= pin.targetRotation)
+		finalTargetRotation += 360;
+
+	pin.targetRotation = finalTargetRotation + 720;
+}
+
 function pullCordOut( event )
 {
 	cordImg.x = -97;
 	cordImg.y = -193;
+
 	playCordAudio();
 	playSelectedAudio( event );
+}
+
+function lerp( A, B, t )
+{
+	return  A + t * (B - A);	
 }
 
 function updatePin( event )
@@ -160,10 +193,13 @@ function updatePin( event )
 	{
 		pin.targetRotation = 0; 
 	}else{	
-		var accel = .93;
-		var destination = pin.targetRotation - ( pin.targetRotation * accel );
-		pin.rotation += destination;
-		pin.targetRotation -= destination;
+		var ease = .1;
+		//var destination = pin.targetRotation - ( pin.targetRotation * accel );
+		//pin.rotation += destination;
+		//pin.targetRotation -= destination;
+		
+		pin.rotation = lerp( pin.rotation, pin.targetRotation, ease);
+
 	}
 	// Detection
 	var distance = Infinity;
@@ -175,7 +211,8 @@ function updatePin( event )
 		var currentItem = items[i];
 		var currentItemPoint = currentItem.localToGlobal( currentItem.x, currentItem.y );
 		var currentDistance = getDistance( currentItemPoint.x, currentItemPoint.y, selectorPoint.x, selectorPoint.y );
-		if( currentDistance < Math.ceil(distance) )
+
+		if( currentDistance < distance )
 		{
 			newSelectedItem = currentItem;
 			distance = currentDistance;
@@ -237,8 +274,8 @@ function spinPin( event )
 
 function getDistance( x1, y1, x2, y2 )
 {
-	var a = x1 - x2;
-	var b = y1 - y2;
+	var a = x2 - x1;
+	var b = y2 - y1;
 	var c = Math.sqrt( a*a + b*b );
 	return c;
 }
