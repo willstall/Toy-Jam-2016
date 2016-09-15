@@ -69,6 +69,7 @@ function main()
 	cordImg.y = -297;
 	//cordImg.addEventListener( "click", playSelectedAnimal);
 	cordImg.addEventListener("mousedown", pullCordOut );
+	cordImg.cursor = "pointer";
 	cordImg.hitArea = playBtn;
 
 	origCordPoint = -297;
@@ -111,6 +112,7 @@ function main()
 	    	circle.regY = 64;
 	    	circle.name = "Circle " + i;
 	    	circle.id = i;
+	    	circle.cursor = "pointer";
 	    	// circle.hitArea = circleHitArea;
 	    	circle.addEventListener("click", pressAnimal);
 
@@ -138,6 +140,7 @@ function main()
 
 	pin = new createjs.Container();
 	pin.targetRotation = 100 + Math.random() * 3000;
+	pin.cursor = "pointer";
 	pin.addChild( pinWheel );
 	//pin.addChild( pinWheelBtn );
 	pin.addChild( itemSelector );
@@ -152,6 +155,7 @@ function main()
 	credits = new createjs.Bitmap("./img/credits.png");
 	credits.x = -154;
 	credits.hitArea = creditsHitbox;
+	credits.cursor = "pointer";
 	credits.addEventListener("click" , pressCredits);
 	container.addChild(credits);
 
@@ -246,7 +250,7 @@ function updateSelectedItem()
 	{
 		selectedItem = items[animalIndex];
 		if(!audioPlaying)
-			playSelectionAudio();		
+			playSelectionAudio( animalIndex );		
 	}
 
 	//console.log( animalIndex );
