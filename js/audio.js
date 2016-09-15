@@ -109,6 +109,7 @@ function playSelectedAudio( event )
 
 	animalSoundInstance = createjs.Sound.play( sound );
 	animalSoundInstance.on("complete", selectedAudioComplete );
+	animalSoundInstance.on("failed", selectedAudioComplete );
 
 	audioSelectedInstances[ index ] = animalSoundInstance;
 }
