@@ -139,7 +139,7 @@ function main()
 		//pinWheel.mouseEnabled = false;
 
 	pin = new createjs.Container();
-	pin.targetRotation = 100 + Math.random() * 3000;
+	pin.targetRotation = 270 + 360;//100 + Math.random() * 3000;
 	pin.cursor = "pointer";
 	pin.addChild( pinWheel );
 	//pin.addChild( pinWheelBtn );
@@ -150,10 +150,10 @@ function main()
 	container.addChild(pin);
 
 	var creditsHitbox = new createjs.Shape();
-		creditsHitbox.graphics.beginFill("Grey").rect(0,0,308,20);
+		creditsHitbox.graphics.beginFill("Grey").rect(0,0,468,20);
 
 	credits = new createjs.Bitmap("./img/credits.png");
-	credits.x = -154;
+	credits.x = -248;
 	credits.hitArea = creditsHitbox;
 	credits.cursor = "pointer";
 	credits.addEventListener("click" , pressCredits);
