@@ -142,7 +142,7 @@ function main()
 	//pin.addChild( pinWheelBtn );
 	pin.addChild( itemSelector );
 	pin.addEventListener( "click" , spinPin );
-	pin.addEventListener( "tick", updatePin );
+	pin.addEventListener( "tick", updateAll );
 
 	container.addChild(pin);
 
@@ -203,6 +203,14 @@ function lerp( A, B, t )
 	return  A + t * (B - A);	
 }
 
+function updateAll( event )
+{
+	updatePin();
+	updateSelectedItem();
+	updateAnimalSizes();
+	updateCord();
+}
+
 function updatePin( event )
 {
 	// Rotation
@@ -221,44 +229,68 @@ function updatePin( event )
 
 	if(audioPlaying == true)
 		pin.targetRotation += 20;
+}
+
+function updateSelectedItem()
+{
+	var clampedRotation = pin.rotation % 360;
+	var animalRange = 360 / sounds.length;
+	var animalIndex = Math.floor( clampedRotation / animalRange ) + 1;
+
+	if( animalIndex >= sounds.length )
+	{
+		animalIndex = 0;
+	}
+
+	if( animalIndex != selectedItem.id )
+	{
+		selectedItem = items[animalIndex];
+		playSelectionAudio();		
+	}
+
+	//console.log( animalIndex );
+
+
+	// clampedRotation = currentRotation % 360;
+	// animalRange = 360 / numAnimals;
+	// animalIndex = Math.floor( clampedRotation / animalRange );
 
 	// Detection
-	var distance = Infinity;
-	var selectorPoint = itemSelector.localToGlobal(itemSelector.x,itemSelector.y);
-	var newSelectedItem = selectedItem;
+	// var distance = Infinity;
+	// var selectorPoint = itemSelector.localToGlobal(itemSelector.x,itemSelector.y);
+	// var newSelectedItem = selectedItem;
 
-	for( var i = 0; i < sounds.length; i++ )
-	{
-		var currentItem = items[i];
-		var currentItemPoint = currentItem.localToGlobal( currentItem.x, currentItem.y );
-		var currentDistance = getDistance( currentItemPoint.x, currentItemPoint.y, selectorPoint.x, selectorPoint.y );
+	// for( var i = 0; i < sounds.length; i++ )
+	// {
+	// 	var currentItem = items[i];
+	// 	var currentItemPoint = currentItem.localToGlobal( currentItem.x, currentItem.y );
+	// 	var currentDistance = getDistance( currentItemPoint.x, currentItemPoint.y, selectorPoint.x, selectorPoint.y );
 
-		if( currentDistance < distance )
-		{
-			newSelectedItem = currentItem;
-			distance = currentDistance;
-		}
-	}
+	// 	if( currentDistance < distance )
+	// 	{
+	// 		newSelectedItem = currentItem;
+	// 		distance = currentDistance;
+	// 	}
+	// }
 
-	if(newSelectedItem != selectedItem)
-	{
-		selectedItem = newSelectedItem;
-		playSelectionAudio();	
-	}
-	// Debug Detection
-	//console.log( selectedItem.name );
+	// if(newSelectedItem != selectedItem)
+	// {
+	// 	selectedItem = newSelectedItem;
+	// 	playSelectionAudio();	
+	// }
+	// // Debug Detection
+	// //console.log( selectedItem.name );
 
-	updateAnimalSizes();
-	updateCord();
 
-	if(!debug)
-		return;
 
-	debug.graphics.clear();
-	debug.graphics.setStrokeStyle(1);
-	debug.graphics.beginStroke("Green");
-	debug.graphics.moveTo(0,0);
-	debug.graphics.lineTo( selectedItem.x, selectedItem.y);
+	// if(!debug)
+	// 	return;
+
+	// debug.graphics.clear();
+	// debug.graphics.setStrokeStyle(1);
+	// debug.graphics.beginStroke("Green");
+	// debug.graphics.moveTo(0,0);
+	// debug.graphics.lineTo( selectedItem.x, selectedItem.y);	
 }
 
 function updateAnimalSizes()
