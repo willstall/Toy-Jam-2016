@@ -60,7 +60,7 @@ function preloadAudio()
 function audioLoaded( event )
 {
 	audioReady = true;
-
+	game();
 	//console.log("Sounds Loaded");
 	//createjs.Sound.play(event.src);
 }
@@ -134,7 +134,7 @@ function playSelectionAudio( index )
 	audioSelectionInstance = createjs.Sound.play("Selection");
 
 	audioSelectionInstances[ index ] = audioSelectionInstance
-	//audioSelectionInstance.volume = 0.5;
+	audioSelectionInstance.volume = 0.5;
 	//audioSelectionInstance.on("complete", this.handleComplete, this);
 }
 

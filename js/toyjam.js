@@ -1,6 +1,7 @@
 // VARIABLES
 var stage;
 var container;
+var loader;
 var pin;
 var items;
 var itemSelector;
@@ -43,11 +44,37 @@ function main()
     // Enable Touch
     createjs.Touch.enable(stage);
 
+    // Create Loading Placeholder
+    var loaderGfx = new createjs.Bitmap("./img/loadingGfx.png");
+    	loaderGfx.regX = loaderGfx.regY = 42;
+    	loaderGfx.addEventListener("tick", updateLoader );
+
+	var loaderTxt = new createjs.Bitmap("./img/loading1.png");
+	// var loaderData = {
+	// 	images: ["./img/loading.png"],
+	// 	frames: { width: 184, height: 50},
+	// 	animations: {
+	// 		load: [0,1]
+	// 	},
+	// 	speed : 0.1,
+	// 	framerate: 50
+	// };
+	// var spriteSheet = new createjs.SpriteSheet( loaderData );
+	// var loaderTxt = new createjs.Sprite( spriteSheet );
+		loaderTxt.regX = 92;
+		loaderTxt.regY = 25;
+		loaderTxt.y = 100;
+		//loaderTxt.play();
+
+    loader = new createjs.Container();
+    loader.x = loader.y = 0;
+    loader.addChild( loaderGfx );
+    loader.addChild( loaderTxt );
+
+    stage.addChild(loader);
     // Container
 	container = new createjs.Container();
 	container.x = container.y = 0;
-   	stage.addChild(container);
-    stage.update();	
 
     // Update
     createjs.Ticker.timingMode = createjs.Ticker.RAF;
@@ -153,11 +180,12 @@ function main()
 		creditsHitbox.graphics.beginFill("Grey").rect(0,0,468,20);
 
 	credits = new createjs.Bitmap("./img/credits.png");
-	credits.x = -248;
+	credits.regX = 248;
+	credits.regY = 20;
 	credits.hitArea = creditsHitbox;
 	credits.cursor = "pointer";
 	credits.addEventListener("click" , pressCredits);
-	container.addChild(credits);
+	stage.addChild(credits);
 
 	updateStage();
 	// Debug
@@ -165,6 +193,24 @@ function main()
 	// debug.graphics.beginFill("Green").drawCircle(1,1,5);
 	// debug.name = "Debug";
 	// container.addChild(debug);
+}
+
+function updateLoader( event )
+{
+	var amount = .1;
+	var accel = 0.01;
+	//event.target.rotation += speed;
+	var loaderGfx = event.target;
+
+	loaderGfx.scaleX = loaderGfx.scaleY = loaderGfx.scaleX * Math.sin( new Date() * accel ) * amount + 1;
+}
+
+function game()
+{	
+	loader.off;
+	stage.removeChild( loader );
+	stage.addChild(container);
+	stage.update();	
 }
 
 function pressCredits()
@@ -353,12 +399,38 @@ function updateStage( event )
 {
 	// if(!container)
 	// 	return;
+	rescale();
 
 	container.x = window.innerWidth * 0.5;
 	container.y = window.innerHeight * 0.5;
 
-	credits.y = stage.canvas.height * 0.5 - 40;
+	loader.x = container.x;
+	loader.y = container.y;
+
+	credits.x = container.x;
+	credits.y = window.innerHeight - 40 *credits.scaleY;
+	//credits.y = container.y - 40 * credits.scaleX;
+
     stage.update();    
+}
+
+function rescale()
+{
+	var percent = 1;
+
+	if(stage.canvas.width <= 846)
+	{
+		percent = stage.canvas.width / 846;
+	}else if(stage.canvas.height <= 846)
+	{
+		percent = stage.canvas.height / 846;
+	}
+
+	container.scaleX = container.scaleY = percent;
+	loader.scaleX = loader.scaleY = percent;
+	credits.scaleX = credits.scaleY	= percent;
+
+	credits.alpha = (stage.canvas.height <= 840)?(0):(1);
 }
 
 function resize()
